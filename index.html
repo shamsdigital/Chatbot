@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot Demo</title>
+</head>
+<body>
+    <h1>Chatbot Demo</h1>
+    <form method="POST" action="{{ url_for('chat') }}">
+        <input type="text" name="user_input" id="user_input" autofocus>
+        <input type="submit" value="Send">
+    </form>
+    <div id="chatlog"></div>
+
+    <script>
+        const form = document.querySelector('form');
+        const input = document.querySelector('#user_input');
+        const chatlog = document.querySelector('#chatlog');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const user_input = input.value;
+            input.value = '';
+
+            if (user_input.trim()) {
+                const message = document.createElement('p');
+                message.classList.add('user');
+                message.innerText = 'You: ' + user_input;
+                chatlog.appendChild(message);
+
+                fetch('/chat', {
+                    method: 'POST',
+                    body: new URLSearchParams({ user_input }),
+                })
+                .then(response => response.text())
+                .then(data => {
+                    const message = document.createElement('p');
+                    message.classList.add('chatbot');
+                    message.innerText = data;
+                    chatlog.appendChild(message);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
